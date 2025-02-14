@@ -1,0 +1,56 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,452;1,452&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+.homepage {
+    display: flex;
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: center;
+    background-color: aliceblue;
+    background: url('/Users/vladsaltrukovic/Desktop/shop copy/src/img/фон.png');
+    gap: 20px;
+    padding: 20px;
+}
+
+.title {
+    width: 100%;
+    font-family: "Montserrat", serif;
+    font-size: 50px;
+    text-align: center;
+    margin: 0; /* Полностью убираем стандартные отступы */
+    margin-bottom: 20px; /* Только нижний отступ */
+}
+
+.polosa {
+    width: 70%; /* Длина полосы */
+    height: 4px; /* Толщина полосы */
+    margin: 0 auto; /* Центрирование и отступ снизу */
+    background-color: rgba(197, 55, 32, 1); /* Оранжевый цвет */
+    border: none; /* Убираем стандартную рамку у hr */
+}
+
+.brand-list {
+    display: flex;
+    flex-direction:row;
+    align-items: center;
+    text-align: center;
+    width: 800px;
+}
+
+.brand-image {
+    width: 250px;
+    height: 250px;
+    object-fit: contain;
+    margin-bottom: 10px;
+    transition: 500ms;
+}
+
+.brand-image:hover {
+    transform: scale(1.05);
+}
+.brand-title {
+    font-size: 20px;
+    color: azure;
+    font-family: "Montserrat", serif;
+}
+

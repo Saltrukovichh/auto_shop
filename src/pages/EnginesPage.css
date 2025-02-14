@@ -1,0 +1,60 @@
+.engines-page {
+    display: flex;
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center; 
+    /* min-height: 100vh;  */
+    width: 100%;
+    flex-wrap: wrap;
+    background-color: aliceblue;
+    background: url('/Users/vladsaltrukovic/Desktop/shop copy/src/img/фон.png');
+    gap: 20px;
+    padding: 20px;
+}
+
+.title {
+    width: 100%;
+    font-family: "Montserrat", serif;
+    font-size: 50px;
+    text-align: center;
+    margin: 0; /* Полностью убираем стандартные отступы */
+    margin-bottom: 20px; /* Только нижний отступ */
+}
+
+.polosa {
+    width: 70%; /* Длина полосы */
+    height: 4px; /* Толщина полосы */
+    margin: 0 auto; /* Центрирование и отступ снизу */
+    background-color: rgba(197, 55, 32, 1); /* Оранжевый цвет */
+    border: none; /* Убираем стандартную рамку у hr */
+}
+
+.engine-list {
+    display: flex;
+    flex-direction: row; /* Ряд с элементами */
+    align-items: center;
+    justify-content: center; /* Горизонтальное центрирование */
+    text-align: center;
+    width: 70%;
+    gap: 20px; /* Расстояние между моделями */
+}
+
+.engine-item {
+    width: 200px;
+    height: 100px;
+    font-family: "Montserrat", serif;
+    font-size: 20px;
+    color: aliceblue;
+    text-align: center;
+    background-color: rgba(0, 0, 0, 0.7); /* Лёгкий фон для контраста */
+    display: flex; /* Центрирование текста внутри модели */
+    justify-content: center;
+    align-items: center;
+    border-radius: 8px; /* Закругленные углы */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.engine-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  }

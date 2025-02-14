@@ -1,0 +1,126 @@
+/* Контейнер поиска */
+.search-bar-container {
+    display: flex;
+    align-items: center;
+    position: relative;
+    flex: 1;
+    margin: 0 20px;
+    max-width: 600px;
+    border: 1px solid #ccc;
+    height: 40px;
+    margin-right: auto;
+    border-radius: 8px;
+    background-color: white;
+    overflow: hidden;
+}
+
+.search-input {
+    flex: 1;
+    padding: 10px 15px;
+    font-size: 16px;
+    border: none;
+    outline: none;
+}
+
+.search-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 15px;
+    background-color: #c53720;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.clear-search-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+    font-size: 18px;
+    color: #888;
+}
+
+.clear-search-button:hover {
+    color: #c53720;
+}
+
+/* Результаты поиска */
+.search-results-container {
+    position: absolute;
+    top: 60px;
+    left: 239px;
+    width: 100%;
+    max-width: 600px;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    overflow-y: auto;
+    max-height: 400px;
+}
+
+.results-header {
+    padding: 10px 15px;
+    background-color: #f8f8f8;
+    border-bottom: 1px solid #ddd;
+    font-weight: bold;
+    color: #222;
+}
+
+.search-result-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.search-result-item:last-child {
+    border-bottom: none;
+}
+
+.result-image {
+    width: 40px;
+    height: 40px;
+    margin-right: 15px;
+}
+
+.result-details {
+    flex: 1;
+}
+
+.result-title {
+    font-size: 14px;
+    font-weight: bold;
+    color: #222;
+    margin: 0;
+}
+
+.result-price {
+    font-size: 14px;
+    color: #c53720;
+}
+
+.buy-button {
+    background-color: #c53720;
+    color: white;
+    border: none;
+    padding: 8px 10px;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.buy-button:hover {
+    background-color: #a52a1a;
+}
+
+/* Сообщение о пустом поиске */
+.no-results {
+    padding: 15px;
+    text-align: center;
+    color: #888;
+}
