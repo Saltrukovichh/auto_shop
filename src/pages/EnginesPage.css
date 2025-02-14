@@ -7,7 +7,7 @@
     width: 100%;
     flex-wrap: wrap;
     background-color: aliceblue;
-    background: url('/Users/vladsaltrukovic/Desktop/shop copy/src/img/фон.png');
+    background: url('../img/фон.png');
     gap: 20px;
     padding: 20px;
 }

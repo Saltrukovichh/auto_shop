@@ -1,7 +1,7 @@
 .products-page {
     padding: 20px;
     background-color: rgba(237, 237, 237, 1);
-    background: url('/Users/vladsaltrukovic/Desktop/shop copy/src/img/фон.png');
+    background: url('../img/фон.png');
   }
   
   h1 {
