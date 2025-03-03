@@ -16,7 +16,7 @@ function ProfilePage({ onLogout }) {
         setUser(response.data);
       } catch (err) {
         console.error("Ошибка при получении данных пользователя:", err);
-        navigate("/login"); // Если пользователь не авторизован, перенаправляем на страницу авторизации
+        navigate("/login");
       }
     };
 

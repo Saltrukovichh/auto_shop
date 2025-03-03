@@ -4,26 +4,42 @@ import { IoCarSportOutline } from "react-icons/io5";
 import { CartContext } from "../CartContext";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-// import "./ShopCart.css";
-// import "./SearchHeader.css";
 import "./Header.css";
 
-export default function Header({ scrollToForm }) {
+export default function Header() {
   const [cartOpen, setCartOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [showResults, setShowResults] = useState(false);
   const { cartItems, addToCart, removeFromCart } = useContext(CartContext);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  
+  const [user, setUser] = useState(null); // Данные пользователя
   const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    setIsAuthenticated(!!token);
+    if (token) {
+      axios
+        .get("http://localhost:5001/api/me", {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        .then((response) => {
+          setUser(response.data);
+        })
+        .catch(() => {
+          localStorage.removeItem("token"); // Очистить токен, если он недействителен
+          setUser(null);
+        });
+    }
   }, []);
 
+  // Обработчик клика по иконке пользователя
   const handleIconClick = () => {
-    navigate(isAuthenticated ? "/profile" : "/login");
+    if (user) {
+      navigate("/profile"); // Если есть пользователь — переход в профиль
+    } else {
+      navigate("/login"); // Если нет — переход на авторизацию
+    }
   };
 
   const totalAmount = cartItems.reduce(
@@ -91,24 +107,25 @@ export default function Header({ scrollToForm }) {
               <FiSearch />
             </button>
           </div>
-
-
-
         </div>
 
         <ul className="nav">
           <li>Каталог</li>
           <li>Информация</li>
           <li>Контакты</li>
-          <li> <FiShoppingCart
-            onClick={() => setCartOpen(!cartOpen)}
-            className={`shop-cart-button ${cartOpen && "active"}`}
-          /></li>
-          <li>          <FiUser
-            className="icon"
-            onClick={handleIconClick}
-            title="Личный кабинет"
-          /></li>
+          <li>
+            <FiShoppingCart
+              onClick={() => setCartOpen(!cartOpen)}
+              className={`shop-cart-button ${cartOpen && "active"}`}
+            />
+          </li>
+          <li>
+            <FiUser
+              className="icon"
+              onClick={handleIconClick}
+              title="Личный кабинет"
+            />
+          </li>
         </ul>
 
         {showResults && (
@@ -174,8 +191,11 @@ export default function Header({ scrollToForm }) {
                 <button
                   className="view-cart-button"
                   onClick={() => {
-                    scrollToForm(); 
-                    setCartOpen(false); 
+                    document
+                      .getElementById("OrderForm")
+                      .scrollIntoView({ behavior: "smooth" });
+                    navigate("/checkout");
+                    setCartOpen(false);
                   }}
                 >
                   Перейти к оформлению

@@ -1,105 +1,166 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,452;1,452&display=swap');
 
 .checkout-page {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-    font-family: Arial, sans-serif;
-  }
-  
-  .cart-summary, .checkout-form {
-    margin-bottom: 20px;
-  }
-  
-  .cart-item {
-    border-bottom: 1px solid #ccc;
-    padding: 10px 0;
-  }
-  
-  .total-amount {
-    font-weight: bold;
-    margin-top: 10px;
-  }
-  
-  .form-group {
-    margin-bottom: 15px;
-  }
-  
-  .form-group label {
-    display: block;
-    font-weight: bold;
-  }
-  
-  .form-group input {
-    width: 100%;
-    padding: 8px;
-    box-sizing: border-box;
-  }
-  
-  .form-group-checkbox {
-    display: flex;
-    align-items: center;
-    margin-bottom: 15px;
-  }
-  
-  .form-group-checkbox label {
-    margin-left: 10px;
-  }
-  
-  .error {
-    color: red;
-    font-size: 14px;
-  }
-  
-  .submit-button {
-    background-color: #cc0000;
-    color: #fff;
-    padding: 10px 20px;
-    border: none;
-    cursor: pointer;
-  }
-  
-  .submit-button:hover {
-    background-color: #ff0000;
-  }
-  .modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-  }
-  
-  .modal {
-    background-color: rgb(108, 108, 108);
-    padding: 20px;
-    border-radius: 8px;
-    text-align: center;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    width: 90%;
-    max-width: 400px;
-  }
-  
-  .close-modal-button {
-    margin-top: 15px;
-    padding: 10px 20px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  
-  .close-modal-button:hover {
-    background-color: #0056b3;
-  }
-  
-  .thanks{
-    color: #222;
-    font-family: "Montserrat", serif;
-  }
+  margin: 0 auto;
+  padding: 50px;
+  font-family: Arial, sans-serif;
+  background: url('../img/фон.png');
+}
+
+.cart-summary,
+.checkout-form {
+  margin-bottom: 20px;
+  max-width: 800px;
+}
+
+.cart-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* Распределяем элементы по ширине */
+  border-bottom: 1px solid #ccc;
+  padding: 10px 0;
+}
+
+.product-image {
+  width: 80px;
+  height: 80px;
+  margin-right: 10px;
+  object-fit: cover;
+}
+
+.quantity-control {
+  display: flex;
+  align-items: center;
+  margin-left: auto; /* Перемещаем счетчик вправо */
+}
+
+.quantity-control button {
+  background-color: #cc0000;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.quantity-control button:hover {
+  background-color: #ff0000;
+}
+
+.quantity-control span {
+  margin: 0 10px;
+  font-size: 16px;
+}
+
+.total-amount {
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 8px;
+  box-sizing: border-box;
+}
+
+.form-group-checkbox {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.form-group-checkbox label {
+  margin-left: 10px;
+}
+
+.error {
+  color: red;
+  font-size: 14px;
+}
+
+.submit-button {
+  background-color: #cc0000;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.submit-button:hover {
+  background-color: #ff0000;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal {
+  background-color: rgb(108, 108, 108);
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  width: 90%;
+  max-width: 400px;
+}
+
+.close-modal-button {
+  margin-top: 15px;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.close-modal-button:hover {
+  background-color: #0056b3;
+}
+
+.thanks {
+  color: #222;
+  font-family: "Montserrat", serif;
+}
+
+.error-message {
+  color: red;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+.has-error input,
+.has-error .form-group-checkbox {
+  border-color: red;
+}
+
+.error-field {
+  border: 1px solid red;
+}
+
+.error {
+  color: red;
+  font-size: 14px;
+  margin-top: 5px;
+  display: block;
+}

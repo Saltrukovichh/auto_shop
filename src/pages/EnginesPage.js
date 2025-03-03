@@ -26,7 +26,7 @@ function EnginesPage() {
 
   return (
     <div className="engines-page">
-      <h1 className="title">Двигатели модели {model}</h1>
+      <h1 className="title">Двигатели модели {model.name}</h1>
       <hr className="polosa" />
       {error && <p className="error">{error}</p>}
       <div className="engine-list">

@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link,useNavigate } from "react-router-dom";
 import axios from "axios";
-import './Auth.css';
+import './RegisterPage.css';
 
 function RegisterPage() {
-  const [username, setUsername] = useState(""); // Добавлено состояние для имени пользователя
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -19,7 +19,7 @@ function RegisterPage() {
         email,
         password,
       });
-      navigate("/login"); // Перенаправляем на страницу авторизации
+      navigate("/login");
     } catch (err) {
       if (err.response?.status === 409) {
         setError("Email или имя пользователя уже заняты.");
@@ -31,35 +31,39 @@ function RegisterPage() {
 
   return (
     <div className="auth-page">
-      <h1>Регистрация</h1>
-      <form onSubmit={handleRegister}>
-        <input
-          type="text"
-          placeholder="Имя пользователя"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          required
-        />
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <input
-          type="password"
-          placeholder="Пароль"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        {error && <p className="error">{error}</p>}
-        <button type="submit">Зарегистрироваться</button>
-      </form>
+      <div className="register-form">
+        <h1>Регистрация</h1>
+        <form onSubmit={handleRegister}>
+          <input
+            type="text"
+            placeholder="Имя пользователя"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+          />
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+          <input
+            type="password"
+            placeholder="Пароль"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+          {error && <p className="error">{error}</p>}
+          <button type="submit">Зарегистрироваться</button>
+        </form>
+        <p>
+          Есть аккаунт? <Link className="link-style" to="/login">Войти</Link>
+        </p>
+      </div>
     </div>
   );
 }
 
 export default RegisterPage;
- 

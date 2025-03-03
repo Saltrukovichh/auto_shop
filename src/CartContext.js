@@ -5,6 +5,7 @@ export const CartContext = createContext();
 export function CartProvider({ children }) {
   const [cartItems, setCartItems] = useState([]);
 
+  // Добавление товара в корзину
   const addToCart = (product) => {
     setCartItems((prevItems) => {
       const existingItem = prevItems.find((item) => item.id === product.id);
@@ -17,25 +18,44 @@ export function CartProvider({ children }) {
     });
   };
 
+  // Удаление товара из корзины
   const removeFromCart = (productId) => {
     setCartItems((prevItems) =>
       prevItems.filter((item) => item.id !== productId)
     );
   };
 
+  // Обновление количества товара
+  const updateQuantity = (productId, newQuantity) => {
+    setCartItems((prevItems) =>
+      prevItems.map((item) =>
+        item.id === productId ? { ...item, quantity: newQuantity } : item
+      )
+    );
+  };
+
+  // Расчет общей суммы
   const totalAmount = cartItems.reduce(
     (total, item) => total + item.price * item.quantity,
     0
   );
 
   return (
-    <CartContext.Provider value={{ cartItems, addToCart, removeFromCart, totalAmount }}>
+    <CartContext.Provider
+      value={{
+        cartItems,
+        addToCart,
+        removeFromCart,
+        updateQuantity, // Добавляем функцию обновления количества
+        totalAmount,
+      }}
+    >
       {children}
     </CartContext.Provider>
   );
 }
 
-// Добавьте этот хук
+// Хук для использования контекста
 export function useCart() {
   const context = useContext(CartContext);
   if (!context) {

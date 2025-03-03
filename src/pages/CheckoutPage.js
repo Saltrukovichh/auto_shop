@@ -1,36 +1,70 @@
 import React, { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import { useCart } from "../CartContext";
 import "./CheckoutPage.css";
+import { useCart } from "../CartContext";
+import { useLocation } from "react-router-dom";
 
 const CheckoutPage = () => {
-  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    address: "",
+    agreeToTerms: false,
+  });
   const location = useLocation();
-  const { cartItems: contextCartItems, totalAmount: contextTotalAmount } = useCart();
+  const { cartItems: contextCartItems, totalAmount: contextTotalAmount, updateQuantity } = useCart();
 
   const { cartItems = contextCartItems, totalAmount = contextTotalAmount } =
     location.state || {};
 
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [email, setEmail] = useState("");
-  const [error, setError] = useState("");
-  const [showModal, setShowModal] = useState(false); // Состояние для модального окна
+  const [errors, setErrors] = useState({});
+  const [isSubmitted, setIsSubmitted] = useState(false);
+
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!formData.name.trim()) {
+      newErrors.name = "Имя обязательно для заполнения";
+    }
+
+    if (!formData.email.trim() || !/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = "Введите корректный email";
+    }
+
+    if (!formData.address.trim()) {
+      newErrors.address = "Адрес обязателен для заполнения";
+    }
+
+    if (!formData.agreeToTerms) {
+      newErrors.agreeToTerms = "Необходимо согласие с условиями";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0; // Возвращает true, если ошибок нет
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!name || !phone || !email) {
-      setError("Пожалуйста, заполните все поля.");
-      return;
-    }
 
-    setError("");
-    setShowModal(true); // Показываем модальное окно
+    if (validateForm()) {
+      // Если форма валидна, отправляем данные
+      console.log("Форма отправлена:", formData);
+      setIsSubmitted(true);
+    } else {
+      console.log("Форма содержит ошибки");
+    }
   };
 
-  const handleCloseModal = () => {
-    setShowModal(false);
-    navigate("/"); // Возвращаемся на главную страницу
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData({
+      ...formData,
+      [name]: type === "checkbox" ? checked : value,
+    });
+  };
+
+  const handleQuantityChange = (id, newQuantity) => {
+    if (newQuantity < 1) return; // Минимальное количество - 1
+    updateQuantity(id, newQuantity);
   };
 
   return (
@@ -41,11 +75,26 @@ const CheckoutPage = () => {
         {cartItems.length > 0 ? (
           cartItems.map((item) => (
             <div key={item.id} className="cart-item">
+              <img
+                src={item.image_url}
+                className="product-image"
+                alt={item.title || "Изображение товара"}
+              />
               <p>{item.title}</p>
+
               <p>
                 {item.quantity} шт. × {item.price} BYN ={" "}
                 {item.quantity * item.price} BYN
               </p>
+              <div className="quantity-control">
+                <button onClick={() => handleQuantityChange(item.id, item.quantity - 1)}>
+                  &lt;
+                </button>
+                <span>{item.quantity}</span>
+                <button onClick={() => handleQuantityChange(item.id, item.quantity + 1)}>
+                  &gt;
+                </button>
+              </div>
             </div>
           ))
         ) : (
@@ -53,64 +102,77 @@ const CheckoutPage = () => {
         )}
         <p className="total-amount">Итого: {totalAmount} BYN</p>
       </div>
-
-      <div className="checkout-form">
-        <h2>Получатель</h2>
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label htmlFor="name">Имя:*</label>
-            <input
-              type="text"
-              id="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="phone">Телефон:*</label>
-            <input
-              type="text"
-              id="phone"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              required
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="email">E-mail:</label>
-            <input
-              type="email"
-              id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </div>
-          <div className="form-group-checkbox">
-            <input type="checkbox" id="agreement" required />
-            <label htmlFor="agreement">
-              Я согласен на обработку персональных данных
-            </label>
-          </div>
-          {error && <p className="error">{error}</p>}
-          <button type="submit" className="submit-button">
-            Оформить заказ
-          </button>
-        </form>
-      </div>
-
-      {/* Модальное окно */}
-      {showModal && (
+      {isSubmitted ? (
         <div className="modal-overlay">
           <div className="modal">
-            <h2>Спасибо за заказ!</h2> 
-            <p classname ="thanks">Мы скоро свяжемся с вами для подтверждения.</p>
-            <button onClick={handleCloseModal} className="close-modal-button">
+            <h2 className="thanks">Спасибо за заказ!</h2>
+            <button
+              className="close-modal-button"
+              onClick={() => setIsSubmitted(false)}
+            >
               Закрыть
             </button>
           </div>
         </div>
+      ) : (
+        <form id="checkoutForm" className="checkout-form" onSubmit={handleSubmit}>
+          {/* Поле "Имя" */}
+          <div className={`form-group ${errors.name ? "has-error" : ""}`}>
+            <label>Имя:</label>
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              className={errors.name ? "error-field" : ""}
+            />
+            {errors.name && <span className="error">{errors.name}</span>}
+          </div>
+
+          {/* Поле "Email" */}
+          <div className={`form-group ${errors.email ? "has-error" : ""}`}>
+            <label>Email:</label>
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              className={errors.email ? "error-field" : ""}
+            />
+            {errors.email && <span className="error">{errors.email}</span>}
+          </div>
+
+          {/* Поле "Адрес" */}
+          <div className={`form-group ${errors.address ? "has-error" : ""}`}>
+            <label>Адрес:</label>
+            <input
+              type="text"
+              name="address"
+              value={formData.address}
+              onChange={handleChange}
+              className={errors.address ? "error-field" : ""}
+            />
+            {errors.address && <span className="error">{errors.address}</span>}
+          </div>
+
+          {/* Чекбокс "Согласие с условиями" */}
+          <div className={`form-group-checkbox ${errors.agreeToTerms ? "has-error" : ""}`}>
+            <input
+              type="checkbox"
+              name="agreeToTerms"
+              checked={formData.agreeToTerms}
+              onChange={handleChange}
+              className={errors.agreeToTerms ? "error-field" : ""}
+            />
+            <label>Согласен с обработкой личных данных</label>
+            {errors.agreeToTerms && <span className="error">{errors.agreeToTerms}</span>}
+          </div>
+
+          {/* Кнопка отправки */}
+          <button type="submit" className="submit-button">
+            Оформить заказ
+          </button>
+        </form>
       )}
     </div>
   );

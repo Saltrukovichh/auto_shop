@@ -17,8 +17,9 @@
     font-family: "Montserrat", serif;
     font-size: 50px;
     text-align: center;
-    margin: 0; /* Полностью убираем стандартные отступы */
-    margin-bottom: 20px; /* Только нижний отступ */
+    margin: 0; 
+    margin-bottom: 20px; 
+
 }
 
 .polosa {
@@ -46,12 +47,12 @@
     font-size: 20px;
     color: aliceblue;
     text-align: center;
-    background-color: rgba(0, 0, 0, 0.7); /* Лёгкий фон для контраста */
-    display: flex; /* Центрирование текста внутри модели */
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
     justify-content: center;
     align-items: center;
-    border-radius: 8px; /* Закругленные углы */
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+    text-decoration: none;
 }
 
 .model-item:hover {

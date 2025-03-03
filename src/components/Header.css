@@ -125,12 +125,13 @@
     text-align: center;
     color: #888;
 }
+
 header .shop-cart-button {
     float: left;
     cursor: pointer;
     transition: color 500ms ease;
     font-size: 24px;
-    color: #333;
+    color: #ffffff;
 }
 
 header .shop-cart-button:hover,
@@ -145,48 +146,50 @@ header .shop-cart {
     width: 450px;
     min-height: 100px;
     background: white;
+    border-radius: 10px;
     -webkit-box-shadow: 0px -5px 31px -4px rgba(245, 84, 84, 1);
     -moz-box-shadow: 0px -5px 31px -4px rgba(245, 84, 84, 1);
     box-shadow: 0px -5px 31px -4px rgba(245, 84, 84, 1);
     z-index: 1000;
     /* Плавные анимации */
 }
+
 /* Элементы корзины */
 .cart-item {
     display: flex;
     align-items: center;
     margin-bottom: 10px;
-  }
-  
-  .cart-item-image {
+}
+
+.cart-item-image {
     width: 50px;
     height: 50px;
     margin-right: 10px;
-  }
-  
-  .cart-item-details {
+}
+
+.cart-item-details {
     flex-grow: 1;
     color: black;
-  }
-  
-  .remove-item-button {
+}
+
+.remove-item-button {
     background: none;
     border: none;
     color: red;
     font-size: 20px;
     cursor: pointer;
-  }
-  
-  /* Итоговая сумма */
-  .cart-total {
+}
+
+/* Итоговая сумма */
+.cart-total {
     margin-top: 10px;
     font-size: 18px;
     text-align: right;
     font-weight: bold;
     color: #333;
-  }
-  
-  .view-cart-button {
+}
+
+.view-cart-button {
     width: 100%;
     padding: 10px;
     background-color: black;
@@ -194,13 +197,17 @@ header .shop-cart {
     border: none;
     cursor: pointer;
     margin-top: 10px;
-  }
-  
-  header .pusto {
+}
+
+.pusto {
     color: black;
-  }
-  
-  header .shop-cart {
+    /* display: flex;
+    justify-content: center;
+    align-items: center; */
+    
+}
+
+header .shop-cart {
     position: absolute;
     top: 7%;
     right: 5%;
@@ -210,9 +217,9 @@ header .shop-cart {
     box-shadow: 0px -5px 31px -4px rgba(245, 84, 84, 1);
     z-index: 1000;
     transition: opacity 500ms ease, transform 500ms ease;
-  }
-  
-  header .shop-cart .cart-total {
+}
+
+header .shop-cart .cart-total {
     margin-top: 10px;
     padding-top: 10px;
     border-top: 1px solid #ddd;
@@ -220,22 +227,22 @@ header .shop-cart {
     text-align: right;
     font-weight: bold;
     color: #333;
-  }
-  
+}
 
-  .header-icons {
+
+.header-icons {
     display: flex;
     align-items: center;
     gap: 20px;
-  }
-  
+}
+
 .icon {
     font-size: 30px;
-    color: #333;
+    color: #ffffff;
     cursor: pointer;
     transition: color 0.3s ease;
-  }
-  .icon:hover {
-    color: #c53720;
-  }
-  
+}
+
+.icon:hover {
+    color: #ff2b0b;
+}

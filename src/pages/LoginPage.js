@@ -22,28 +22,30 @@ function LoginPage() {
 
   return (
     <div className="auth-page">
-      <h1>Войти</h1>
-      <form onSubmit={handleLogin}>
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <input
-          type="password"
-          placeholder="Пароль"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        {error && <p className="error">{error}</p>}
-        <button type="submit">Войти</button>
-      </form>
-      <p>
-        Нет аккаунта? <Link to="/register">Регистрация</Link>
-      </p>
+      <div class="login-form">
+        <h1>Войти</h1>
+        <form onSubmit={handleLogin}>
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+          <input
+            type="password"
+            placeholder="Пароль"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+          {error && <p className="error">{error}</p>}
+          <button type="submit">Войти</button>
+        </form>
+        <p>
+          Нет аккаунта? <Link className="link-style" to="/register">Регистрация</Link>
+        </p>
+      </div>
     </div>
   );
 }

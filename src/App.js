@@ -4,7 +4,7 @@ import Header from "./components/Header";
 import Footer from "./components/Footer";
 import HomePage from "./pages/HomePage";
 import ModelsPage from "./pages/ModelsPage";
-import EnginesPage from "./pages/EnginesPage"; // Импортируем новую страницу
+import EnginesPage from "./pages/EnginesPage"; 
 import ProductsPage from "./pages/ProductsPage";
 import ProfilePage from "./pages/ProfilePage";
 import LoginPage from "./pages/LoginPage";

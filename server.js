@@ -160,7 +160,7 @@ app.get("/api/products", async (req, res) => {
     const params = [];
 
     if (search) {
-      query += " WHERE title ILIKE $1";
+      query += " WHERE title LIKE $1";
       params.push(`%${search}%`);
     }
 
@@ -171,7 +171,6 @@ app.get("/api/products", async (req, res) => {
     res.status(500).send("Ошибка сервера");
   }
 });
-
 app.listen(PORT, () => {
   console.log(`Сервер запущен на http://localhost:${PORT}`);
 });

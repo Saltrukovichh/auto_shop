@@ -10,11 +10,11 @@ const Categories = () => {
   ];
 
   return (
-    <div className="categories">
+    <div id="OrderForm" className="categories">
       {categories.map((category, index) => (
         <div
           key={index}
-          onClick={() => navigate(category.path)} // Простое перенаправление
+          onClick={() => navigate(category.path)}
           className="category-item"
         >
           {category.name}
