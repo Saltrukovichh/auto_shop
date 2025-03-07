@@ -2,7 +2,7 @@ import React, { useContext, useState, useEffect } from "react";
 import { FiShoppingCart, FiSearch, FiX, FiUser } from "react-icons/fi";
 import { IoCarSportOutline } from "react-icons/io5";
 import { CartContext } from "../CartContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import "./Header.css";
 
@@ -15,26 +15,28 @@ export default function Header() {
   
   const [user, setUser] = useState(null); // Данные пользователя
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
-      axios
-        .get("http://localhost:5001/api/me", {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-        .then((response) => {
-          setUser(response.data);
-        })
-        .catch(() => {
-          localStorage.removeItem("token"); // Очистить токен, если он недействителен
-          setUser(null);
-        });
+      axios.get("http://localhost:5001/api/me", {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((response) => {
+        console.log("Данные пользователя:", response.data);
+        setUser(response.data);
+      })
+      .catch(() => {
+        localStorage.removeItem("token");
+        setUser(null);
+      });
     }
-  }, []);
+  }, [location.pathname]);
 
   // Обработчик клика по иконке пользователя
   const handleIconClick = () => {
+    console.log("Icon clicked");
     if (user) {
       navigate("/profile"); // Если есть пользователь — переход в профиль
     } else {

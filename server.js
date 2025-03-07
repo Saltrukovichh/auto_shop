@@ -3,9 +3,12 @@ const pool = require('./db');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const nodemailer = require("nodemailer");
+const bodyParser = require("body-parser");
 
 const app = express();
 const PORT = 5001;
+app.use(express.json());
 
 app.use(cors({
   origin: 'http://localhost:3000', // Укажите адрес фронтенда
@@ -41,11 +44,11 @@ app.get('/api/me', authenticateToken, async (req, res) => {
 
 // Регистрация
 app.post('/api/register', async (req, res) => {
-  const { username, email, password } = req.body; // Получаем username
+  const { username, email, password, phone_number } = req.body; // Добавили phone_number
 
   try {
     // Проверяем, что все поля заполнены
-    if (!username || !email || !password) {
+    if (!username || !email || !password || !phone_number) {
       return res.status(400).send('Все поля обязательны для заполнения');
     }
 
@@ -54,8 +57,8 @@ app.post('/api/register', async (req, res) => {
 
     // Вставляем пользователя в базу данных
     await pool.query(
-      'INSERT INTO users (username, email, password_hash) VALUES ($1, $2, $3)',
-      [username, email, hashedPassword]
+      'INSERT INTO users (username, email, password_hash, phone_number) VALUES ($1, $2, $3, $4)', // Добавили phone_number
+      [username, email, hashedPassword, phone_number]
     );
 
     res.status(201).send('Пользователь успешно зарегистрирован');
@@ -64,7 +67,7 @@ app.post('/api/register', async (req, res) => {
 
     // Если ошибка связана с уникальными ограничениями
     if (err.code === '23505') {
-      res.status(409).send('Email или имя пользователя уже заняты');
+      res.status(409).send('Email, имя пользователя или номер телефона уже заняты');
     } else {
       res.status(500).send('Ошибка сервера');
     }
@@ -171,6 +174,91 @@ app.get("/api/products", async (req, res) => {
     res.status(500).send("Ошибка сервера");
   }
 });
+
+const verificationCodes = {};
+//rshh ahcx hgip fvua
+// Функция для отправки email
+const sendVerificationEmail = async (email, code) => {
+  try {
+    const transporter = nodemailer.createTransport({
+      host: "smtp.gmail.com",
+      port: 587,
+      secure: false,
+      auth: {
+        user: "batushka526@gmail.com", // Укажите ваш email
+        pass: "rshh ahcx hgip fvua" // Сгенерируйте "пароль приложения" в Google
+      },
+      tls: {
+        rejectUnauthorized: false
+      }
+    });
+
+
+    const mailOptions = {
+      from: "batushka526@gmail.com",
+      to: email,
+      subject: "Код подтверждения",
+      text: `Ваш код подтверждения: ${code}`,
+    };
+
+    await transporter.sendMail(mailOptions);
+    console.log("Email отправлен успешно");
+  } catch (error) {
+    console.error("Ошибка при отправке email:", error.message);
+  }
+};
+
+// Эндпоинт для отправки кода подтверждения
+app.post("/api/send-verification-code", (req, res) => {
+  const { email } = req.body;
+
+  if (!email) return res.status(400).send("Email обязателен");
+
+  const code = Math.floor(100000 + Math.random() * 900000);
+  verificationCodes[email] = code;
+
+  console.log("Новый код отправлен:", code);
+
+  sendVerificationEmail(email, code);
+  res.status(200).send("Код подтверждения отправлен");
+});
+// Эндпоинт для проверки кода
+app.post("/api/verify-code", (req, res) => {
+  const { email, code } = req.body;
+
+  if (!email || !code) {
+    return res.status(400).send("Email и код обязательны");
+  }
+
+  console.log("Код в базе:", verificationCodes[email], "Код введен:", code);
+
+  if (String(verificationCodes[email]) === String(code)) { // Приводим к строкам
+    delete verificationCodes[email]; // Удаляем код после успешного ввода
+    console.log("Код удален")
+    res.status(200).send("Код подтвержден");
+  } else {
+    res.status(400).send("Неверный код");
+  }
+});
+app.post('/api/check-user', async (req, res) => {
+  const { email, phoneNumber } = req.body;
+  
+  try {
+    const result = await pool.query(
+      'SELECT * FROM users WHERE email = $1 OR phone_number = $2',
+      [email, phoneNumber]
+    );
+
+    if (result.rows.length > 0) {
+      return res.status(409).send("Пользователь уже существует");
+    }
+    res.status(200).send("OK");
+  } catch (err) {
+    console.error("Ошибка проверки пользователя:", err);
+    res.status(500).send("Ошибка сервера");
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Сервер запущен на http://localhost:${PORT}`);
 });
