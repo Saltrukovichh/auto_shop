@@ -1,178 +1,164 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./CheckoutPage.css";
 import { useCart } from "../CartContext";
-import { useLocation } from "react-router-dom";
+import { useUser } from "../UserContext";
+import axios from "axios";
 
 const CheckoutPage = () => {
+  const { user, loading } = useUser();
+  const { cartItems, totalAmount, updateQuantity, clearCart } = useCart();
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    address: "",
-    agreeToTerms: false,
+    name: user?.username || "",
+    email: user?.email || "",
+    phone: user?.phone_number || "",
   });
-  const location = useLocation();
-  const { cartItems: contextCartItems, totalAmount: contextTotalAmount, updateQuantity } = useCart();
-
-  const { cartItems = contextCartItems, totalAmount = contextTotalAmount } =
-    location.state || {};
-
   const [errors, setErrors] = useState({});
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [orderData, setOrderData] = useState(null); // Состояние для хранения данных заказа
+
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        name: user.username,
+        email: user.email,
+        phone: user.phone_number,
+      });
+    }
+  }, [user, loading]);
+
+  if (loading) return <div>Загрузка данных...</div>;
 
   const validateForm = () => {
     const newErrors = {};
-
-    if (!formData.name.trim()) {
-      newErrors.name = "Имя обязательно для заполнения";
-    }
-
-    if (!formData.email.trim() || !/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = "Введите корректный email";
-    }
-
-    if (!formData.address.trim()) {
-      newErrors.address = "Адрес обязателен для заполнения";
-    }
-
-    if (!formData.agreeToTerms) {
-      newErrors.agreeToTerms = "Необходимо согласие с условиями";
-    }
+    if (!formData.name.trim()) newErrors.name = "Имя обязательно";
+    if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = "Неверный email";
+    if (!user && !formData.phone.trim()) newErrors.phone = "Телефон обязателен";
 
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0; // Возвращает true, если ошибок нет
+    return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!validateForm()) return;
 
-    if (validateForm()) {
-      // Если форма валидна, отправляем данные
-      console.log("Форма отправлена:", formData);
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.post(
+        "http://localhost:5001/api/orders",
+        {
+          userId: user?.id || null,
+          email: formData.email,
+          phone_number: formData.phone,
+          cartItems,
+          totalAmount,
+        },
+        { headers: token ? { Authorization: `Bearer ${token}` } : {} }
+      );
+
+      console.log("✅ Заказ оформлен:", response.data);
+      setOrderData(response.data); // Сохраняем данные заказа для показа в модальном окне
       setIsSubmitted(true);
-    } else {
-      console.log("Форма содержит ошибки");
+      clearCart();
+    } catch (error) {
+      console.error("❌ Ошибка при оформлении заказа:", error);
     }
-  };
-
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData({
-      ...formData,
-      [name]: type === "checkbox" ? checked : value,
-    });
-  };
-
-  const handleQuantityChange = (id, newQuantity) => {
-    if (newQuantity < 1) return; // Минимальное количество - 1
-    updateQuantity(id, newQuantity);
   };
 
   return (
-    <div className="checkout-page">
-      <h1>Оформление заказа</h1>
-      <div className="cart-summary">
-        <h2>Ваш заказ</h2>
-        {cartItems.length > 0 ? (
-          cartItems.map((item) => (
-            <div key={item.id} className="cart-item">
-              <img
-                src={item.image_url}
-                className="product-image"
-                alt={item.title || "Изображение товара"}
-              />
-              <p>{item.title}</p>
+    <div className="checkout-container">
+      <h1 className="checkout-title">Оформление заказа</h1>
 
-              <p>
-                {item.quantity} шт. × {item.price} BYN ={" "}
-                {item.quantity * item.price} BYN
-              </p>
-              <div className="quantity-control">
-                <button onClick={() => handleQuantityChange(item.id, item.quantity - 1)}>
-                  &lt;
-                </button>
-                <span>{item.quantity}</span>
-                <button onClick={() => handleQuantityChange(item.id, item.quantity + 1)}>
-                  &gt;
-                </button>
+      <div className="checkout-content">
+        <div className="cart-section">
+          <h2>Ваша корзина</h2>
+          <div className="cart-items">
+            {cartItems.map((item) => (
+              <div key={item.id} className="cart-item">
+                <img src={item.image_url} alt={item.title} className="product-image" />
+                <div className="item-details">
+                  <h3>{item.title}</h3>
+                  <p>{item.price} BYN × {item.quantity}</p>
+                  <div className="quantity-controls">
+                    <button onClick={() => updateQuantity(item.id, item.quantity - 1)}>-</button>
+                    <span>{item.quantity}</span>
+                    <button onClick={() => updateQuantity(item.id, item.quantity + 1)}>+</button>
+                  </div>
+                </div>
               </div>
-            </div>
-          ))
-        ) : (
-          <p>Корзина пуста</p>
-        )}
-        <p className="total-amount">Итого: {totalAmount} BYN</p>
-      </div>
-      {isSubmitted ? (
-        <div className="modal-overlay">
-          <div className="modal">
-            <h2 className="thanks">Спасибо за заказ!</h2>
-            <button
-              className="close-modal-button"
-              onClick={() => setIsSubmitted(false)}
-            >
-              Закрыть
-            </button>
+            ))}
+          </div>
+          <div className="cart-total">
+            <span>Итого:</span>
+            <span>{totalAmount} BYN</span>
           </div>
         </div>
-      ) : (
-        <form id="checkoutForm" className="checkout-form" onSubmit={handleSubmit}>
-          {/* Поле "Имя" */}
-          <div className={`form-group ${errors.name ? "has-error" : ""}`}>
-            <label>Имя:</label>
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              className={errors.name ? "error-field" : ""}
-            />
-            {errors.name && <span className="error">{errors.name}</span>}
+
+        <form className="checkout-form" onSubmit={handleSubmit}>
+          <h2>Данные для оформления</h2>
+
+          <div className={`form-group ${errors.name ? "error" : ""}`}>
+            <label htmlFor="name">Имя</label>
+            <input id="name" type="text" name="name" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} disabled={!!user} />
+            {errors.name && <span className="error-message">{errors.name}</span>}
           </div>
 
-          {/* Поле "Email" */}
-          <div className={`form-group ${errors.email ? "has-error" : ""}`}>
-            <label>Email:</label>
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              className={errors.email ? "error-field" : ""}
-            />
-            {errors.email && <span className="error">{errors.email}</span>}
+          <div className={`form-group ${errors.email ? "error" : ""}`}>
+            <label htmlFor="email">Email</label>
+            <input id="email" type="email" name="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} disabled={!!user} />
+            {errors.email && <span className="error-message">{errors.email}</span>}
           </div>
 
-          {/* Поле "Адрес" */}
-          <div className={`form-group ${errors.address ? "has-error" : ""}`}>
-            <label>Адрес:</label>
-            <input
-              type="text"
-              name="address"
-              value={formData.address}
-              onChange={handleChange}
-              className={errors.address ? "error-field" : ""}
-            />
-            {errors.address && <span className="error">{errors.address}</span>}
-          </div>
+          {!user && (
+            <div className={`form-group ${errors.phone ? "error" : ""}`}>
+              <label htmlFor="phone">Телефон</label>
+              <input id="phone" type="tel" name="phone" value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} />
+              {errors.phone && <span className="error-message">{errors.phone}</span>}
+            </div>
+          )}
 
-          {/* Чекбокс "Согласие с условиями" */}
-          <div className={`form-group-checkbox ${errors.agreeToTerms ? "has-error" : ""}`}>
-            <input
-              type="checkbox"
-              name="agreeToTerms"
-              checked={formData.agreeToTerms}
-              onChange={handleChange}
-              className={errors.agreeToTerms ? "error-field" : ""}
-            />
-            <label>Согласен с обработкой личных данных</label>
-            {errors.agreeToTerms && <span className="error">{errors.agreeToTerms}</span>}
-          </div>
-
-          {/* Кнопка отправки */}
-          <button type="submit" className="submit-button">
-            Оформить заказ
-          </button>
+          <button type="submit" className="submit-button">Подтвердить заказ</button>
         </form>
+      </div>
+
+      {isSubmitted && (
+        <div className="modalOverlay">
+          <div className="modalContent">
+            {user ? (
+              <>
+                <h2>Спасибо за покупку!</h2>
+                <p>Ваш заказ успешно оформлен. Вы можете просмотреть его в личном кабинете.</p>
+              </>
+            ) : (
+              <>
+                <h2>Скачивание продуктов</h2>
+                <p>Ваш заказ успешно оформлен. Вы можете скачать продукты прямо сейчас.</p>
+                <ul>
+                  {orderData?.products.map((product, index) => (
+                    <li key={index}>
+                      <a
+                        href={product.download_link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={async () => {
+                          try {
+                            await axios.put(`http://localhost:5001/api/orders/${orderData.id}/complete`);
+                            console.log("✅ Статус заказа обновлен");
+                          } catch (error) {
+                            console.error("❌ Ошибка при обновлении статуса заказа:", error);
+                          }
+                        }}
+                      >
+                        {product.title}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
+            <button onClick={() => setIsSubmitted(false)} className="close-button">Закрыть</button>
+          </div>
+        </div>
       )}
     </div>
   );

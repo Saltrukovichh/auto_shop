@@ -12,9 +12,12 @@ import RegisterPage from "./pages/RegisterPage";
 import { CartProvider } from "./CartContext";
 import Categories from "./components/Categories";
 import CheckoutPage from "./pages/CheckoutPage";
+import AdminDashboard from './pages/AdminDashboard';
+import { UserProvider } from './UserContext';
 
 function App() {
   return (
+    <UserProvider>
     <CartProvider>
       <Router>
         <div className="wrapper">
@@ -33,11 +36,13 @@ function App() {
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/checkout" element={<CheckoutPage />} />
+            <Route path="/admin/dashboard" element={<AdminDashboard />} />
           </Routes>
           <Footer />
         </div>
       </Router>
     </CartProvider>
+    </UserProvider>
   );
 }
 
