@@ -1,44 +1,283 @@
-.profile-wrapper {
+.profile-wrapper{
     width: 100%;
-    height: 500px;
+    background: url('../img/фон.png') center/cover no-repeat;
+}
+.profile-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 20px;
+    min-height: 100vh;
+}
+
+/* Заголовок и основная информация */
+.profile-card {
+    background-color: rgba(141, 140, 140, 0.4);
+    backdrop-filter: blur(8px);
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    padding: 2.5rem;
+    backdrop-filter: blur(12px);
+    margin-bottom: 2rem;
+    transition: transform 0.3s ease;
+}
+
+.profile-card:hover {
+    transform: translateY(-5px);
+}
+
+.user-info {
+    margin: 2rem 0;
+}
+
+.user-info p {
+    margin: 1rem 0;
+    font-size: 1.1rem;
+    color: #fffbfb;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.user-info span {
+    font-weight: 600;
+    color: #f63434;
+    min-width: 140px;
+}
+
+/* Кнопка выхода */
+.logout-btn {
+    width: fit-content;
+    padding: 12px;
+    font-size: 1.1rem;
+    background: #f60b0b;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+}
+
+.logout-btn:hover {
+    background: #c50000;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Секция заказов */
+.orders-section {
+    background-color: rgba(141, 140, 140, 0.4);
+    backdrop-filter: blur(8px);
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    padding: 2.5rem;
+    backdrop-filter: blur(12px);
+}
+
+.orders-section h2 {
+    font-size: 1.8rem;
+    color: #2d3436;
+    margin-bottom: 2rem;
+    position: relative;
+    padding-bottom: 1rem;
+}
+
+.orders-section h2::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 60px;
+    height: 3px;
+    background: #6c5ce7;
+    border-radius: 2px;
+}
+
+/* Карточка заказа */
+.order-card {
+    background: rgb(225, 225, 225);
+    border-radius: 12px;
+    padding: 1.5rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid rgba(108, 92, 231, 0.1);
+}
+
+.order-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 24px rgba(108, 92, 231, 0.1);
+}
+
+.order-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.order-status {
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.order-body p {
+    margin: 0.75rem 0;
+    color: #636e72;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.order-body span:first-child {
+    color: #2d3436;
+    font-weight: 600;
+    min-width: 80px;
+}
+
+.products-list {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(45, 52, 54, 0.1);
+}
+
+.product-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    margin: 0.5rem 0;
+    background: rgba(108, 92, 231, 0.03);
+    border-radius: 8px;
+}
+
+/* Анимации и медиа-запросы */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.orders-grid {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    animation: fadeIn 0.6s ease-out;
+}
+
+.loading-spinner {
+    width: 48px;
+    height: 48px;
+    border: 3px solid rgba(108, 92, 231, 0.2);
+    border-top-color: #6c5ce7;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@media (max-width: 768px) {
+    .profile-container {
+        padding: 15px;
+    }
+
+    .profile-card,
+    .orders-section {
+        padding: 1.5rem;
+    }
+
+    .user-info p {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+
+    .order-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+}
+
+/* Цвета статусов */
+.processing {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.shipped {
+    background: #d4edda;
+    color: #155724;
+}
+
+.delivered {
+    background: #d1ecf1;
+    color: #0c5460;
+}
+
+.cancelled {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
     display: flex;
     align-items: center;
     justify-content: center;
-    background: url('../img/фон.png');
-}
-
-.profile-page {
-    width: 600px;
-    height: 400px;
-    background-color: #8d8c8c6a;
-    border-radius: 50px;
-    padding: 20px;
-    position: relative;
-    display: flex;
-    flex-direction: column; 
-}
-
-.button-container {
-    margin-top: auto; 
-    display: flex;
-    justify-content: center; 
-}
-
-.log-out-button {
-    border-radius: 10px;
+  }
+  
+  .modalContent {
+    background-color: rgba(141, 140, 140, 0.4);
+    backdrop-filter: blur(8px);
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+    border-radius: 8px;
+    text-align: center;
+    max-width: 400px;
+  }
+  
+  .modalContent h2 {
+    margin-bottom: 1rem;
+  }
+  
+  .modalContent ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .modalContent li {
+    margin: 0.5rem 0;
+  }
+  
+  .modalContent a {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: bold;
+  }
+  
+  .modalContent a:hover {
+    text-decoration: underline;
+  }
+  
+  .modalContent button {
+    margin-top: 1rem;
+    background: red;
     color: white;
-    transition: .2s linear;
-    background: #f60b0b;
-    width: 100px;
-    height: 50px;
+    padding: 0.5rem 1rem;
     border: none;
     cursor: pointer;
-}
-
-.log-out-button:hover {
-    box-shadow: #c50000 0 0px 0px 40px inset;
-}
-
-p {
-    margin-bottom: 20px;
-}
+  }
+  

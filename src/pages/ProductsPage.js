@@ -38,7 +38,7 @@ function ProductsPage() {
               <button className="btn-buy" onClick={() => addToCart(product)}>
                 Купить
               </button>
-              <button className="btn-buy-one-click">Купить в 1 клик</button>
+
             </div>
           </div>
         ))}

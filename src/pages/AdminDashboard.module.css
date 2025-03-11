@@ -1,0 +1,120 @@
+.adminDashboard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 80vh;
+    background: url('../img/фон.png') center/cover no-repeat;
+    padding: 20px;
+}
+
+.adminDashboard h1 {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    color: #ffffff;
+    text-align: center;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.adminTableContainer {
+    width: 100%;
+    max-width: 1000px;
+    padding: 2rem;
+    background-color: rgba(141, 140, 140, 0.4);
+    backdrop-filter: blur(8px);
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    overflow-x: auto;
+}
+
+.adminTable {
+    width: 100%;
+    border-collapse: collapse;
+    color: #ffffff;
+}
+
+.adminTable th,
+.adminTable td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.adminTable th {
+    background-color: rgba(216, 9, 9, 0.7);
+    font-weight: 500;
+}
+
+/* .adminTable tr:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+} */
+
+.logOutButton {
+    padding: 8px 12px;
+    font-size: 0.9rem;
+    background: #d80909;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    
+}
+
+.logOutButton:hover {
+    background: #c50000;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.logOutButton:disabled {
+    background: #666;
+    cursor: not-allowed;
+}
+
+.error {
+    color: #ff4444;
+    font-size: 0.9rem;
+    margin-top: 5px;
+    text-align: center;
+}
+
+@media (max-width: 768px) {
+    .adminTableContainer {
+        padding: 1rem;
+        border-radius: 15px;
+    }
+
+    .adminTable th,
+    .adminTable td {
+        padding: 8px 10px;
+        font-size: 0.9rem;
+    }
+
+    .adminTable button {
+        padding: 6px 10px;
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .adminDashboard h1 {
+        font-size: 1.75rem;
+    }
+
+    .adminTableContainer {
+        width: 90%;
+        padding: 0.5rem;
+    }
+
+    .adminTable th,
+    .adminTable td {
+        padding: 6px 8px;
+        font-size: 0.8rem;
+    }
+
+    .adminTable button {
+        padding: 5px 8px;
+        font-size: 0.75rem;
+    }
+}

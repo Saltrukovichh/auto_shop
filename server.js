@@ -4,17 +4,23 @@ const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const nodemailer = require("nodemailer");
-const bodyParser = require("body-parser");
+const router = require('express').Router();
 
 const app = express();
 const PORT = 5001;
 app.use(express.json());
 
-app.use(cors({
-  origin: 'http://localhost:3000', // Укажите адрес фронтенда
+const corsOptions = {
+  origin: 'http://localhost:3000',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  credentials: true,
-}));
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+};
+
+app.use(cors(corsOptions));
+
+// Для обработки preflight-запросов
+app.options('*', cors(corsOptions));
 app.use(express.json()); // Для обработки JSON-запросов
 
 const authenticateToken = (req, res, next) => {
@@ -31,7 +37,7 @@ const authenticateToken = (req, res, next) => {
 
 app.get('/api/me', authenticateToken, async (req, res) => {
   try {
-    const result = await pool.query('SELECT id, username, email, created_at FROM users WHERE id = $1', [req.user.userId]);
+    const result = await pool.query('SELECT id, username, email, phone_number, created_at FROM users WHERE id = $1', [req.user.userId]);
     if (result.rows.length === 0) return res.status(404).send("Пользователь не найден");
 
     res.json(result.rows[0]);
@@ -94,8 +100,25 @@ app.post('/api/login', async (req, res) => {
     }
 
     // Генерируем JWT
-    const token = jwt.sign({ userId: user.id }, 'secret_key', { expiresIn: '1h' });
-    res.json({ token });
+
+    const token = jwt.sign(
+      { 
+        userId: user.id, 
+        isAdmin: user.is_admin 
+      }, 
+      'secret_key', 
+      { expiresIn: '1h' }
+    );
+
+    res.json({ 
+      token, 
+      user: {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        isAdmin: user.is_admin
+      }
+    });
   } catch (err) {
     console.error("Ошибка при авторизации:", err.message);
     res.status(500).send('Ошибка сервера');
@@ -145,14 +168,17 @@ app.get('/api/models/:modelId/engines', async (req, res) => {
 
 
 // Получение продуктов по id двигателя
-app.get('/api/engines/:engineId/products', async (req, res) => {
+app.get("/api/engines/:engineId/products", async (req, res) => {
   const { engineId } = req.params;
   try {
-    const result = await pool.query('SELECT * FROM products WHERE engine_id = $1', [engineId]);
+    const result = await pool.query(
+      "SELECT id, title, price, image_url, download_link FROM products WHERE engine_id = $1",
+      [engineId]
+    );
     res.json(result.rows);
   } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Ошибка сервера');
+    console.error("Ошибка при получении товаров:", err.message);
+    res.status(500).send("Ошибка сервера");
   }
 });
 
@@ -256,6 +282,164 @@ app.post('/api/check-user', async (req, res) => {
   } catch (err) {
     console.error("Ошибка проверки пользователя:", err);
     res.status(500).send("Ошибка сервера");
+  }
+});
+
+//админские дела
+const requireAdmin = (req, res, next) => {
+  const token = req.headers.authorization?.split(' ')[1];
+  
+  if (!token) {
+    return res.status(401).send('Требуется авторизация');
+  }
+
+  try {
+    const decoded = jwt.verify(token, 'secret_key');
+    if (!decoded.isAdmin) {
+      return res.status(403).send('Доступ запрещен');
+    }
+    req.user = decoded;
+    next();
+  } catch (err) {
+    return res.status(401).send('Недействительный токен');
+  }
+};
+
+// Получение списка всех пользователей
+app.get('/api/admin/users', requireAdmin, async (req, res) => {
+  try {
+    const result = await pool.query(
+      'SELECT id, username, email, created_at, phone_number, is_admin FROM users'
+    );
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Ошибка сервера');
+  }
+});
+
+// Обновление прав пользователя
+app.put('/api/admin/users/:id', requireAdmin, async (req, res) => {
+  const { id } = req.params;
+  const { isAdmin } = req.body;
+
+  try {
+    await pool.query(
+      'UPDATE users SET is_admin = $1 WHERE id = $2',
+      [isAdmin, id]
+    );
+    res.send('Права обновлены');
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Ошибка сервера');
+  }
+});
+
+// API для создания заказа
+app.post("/api/orders", async (req, res) => {
+  const { userId, email, phone_number, cartItems, totalAmount } = req.body;
+
+  console.log("📩 Пришел запрос на создание заказа:", req.body);
+
+  try {
+    if (!cartItems || cartItems.length === 0) {
+      return res.status(400).json({ error: "Корзина пуста" });
+    }
+
+    // Формируем JSON-структуру товаров
+    const products = cartItems.map(({ id, title, price, quantity, download_link }) => ({
+      id,
+      title,
+      price,
+      quantity,
+      download_link,
+    }));
+
+    // Если userId пустой, создаем заказ без привязки к пользователю
+    const result = await pool.query(
+      `INSERT INTO orders (user_id, email, phone_number, products, total_amount) 
+       VALUES ($1, $2, $3, $4, $5) RETURNING *`,
+      [userId, email, phone_number, JSON.stringify(products), totalAmount]
+    );
+
+    console.log("✅ Заказ успешно создан:", result.rows[0]);
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    console.error("❌ Ошибка при создании заказа:", err.message);
+    res.status(500).json({ error: "Ошибка сервера", details: err.message });
+  }
+});
+
+
+
+// API для получения заказов пользователя
+app.get('/api/orders', authenticateToken, async (req, res) => {
+  const userId = req.user.userId;
+
+  console.log("Получение заказов пользователя ID:", userId);
+
+  try {
+    const result = await pool.query(
+      "SELECT id, user_id, products::text, status, total_amount, created_at FROM orders WHERE user_id = $1 ORDER BY created_at DESC",
+      [userId]
+    );
+
+    console.log("Заказы из БД:", result.rows);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: "У вас пока нет заказов" });
+    }
+
+    // Парсим JSONB (products)
+    const formattedOrders = result.rows.map(order => ({
+      ...order,
+      products: JSON.parse(order.products), // Преобразуем JSONB в объект
+      created_at: new Date(order.created_at).toISOString(), // Форматируем дату
+    }));
+
+    res.json(formattedOrders);
+  } catch (error) {
+    console.error("Ошибка при получении заказов:", error);
+    res.status(500).json({ error: "Ошибка сервера" });
+  }
+});
+
+
+//обновление статуса заказов
+app.put("/api/orders/:orderId", authenticateToken, async (req, res) => {
+  const { status } = req.body;
+  const { orderId } = req.params;
+
+  if (!["processing", "shipped", "delivered"].includes(status)) {
+    return res.status(400).json({ error: "Неверный статус" });
+  }
+
+  try {
+    const result = await pool.query(
+      `UPDATE orders SET status = $1, updated_at = CURRENT_TIMESTAMP 
+       WHERE id = $2 AND user_id = $3 RETURNING *`,
+      [status, orderId, req.user.userId]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Заказ не найден" });
+    }
+
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error("Ошибка при обновлении статуса:", err.message);
+    res.status(500).json({ error: "Ошибка сервера" });
+  }
+});
+
+app.put("/api/orders/:orderId/complete", async (req, res) => {
+  const { orderId } = req.params;
+  try {
+    await pool.query("UPDATE orders SET status = 'completed successfully' WHERE id = $1", [orderId]);
+    res.status(200).json({ message: "Статус заказа обновлен" });
+  } catch (error) {
+    console.error("Ошибка при обновлении статуса заказа:", error);
+    res.status(500).json({ error: "Ошибка сервера" });
   }
 });
 
